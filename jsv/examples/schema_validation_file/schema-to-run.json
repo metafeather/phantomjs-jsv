@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "version": {
+      "type": "number"
+    },
+    "count": {
+      "type": "number",
+      "optional": true
+    },
+    "things": {
+      "type": "array",
+      "items": { // 'items'; represents the items within the 'things' array
+        "type": "object",
+        "properties": {
+          "color": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

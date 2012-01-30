@@ -1,0 +1,13 @@
+/* a very simple api */
+{
+  "success": true,
+  "version": 0.1,
+
+  "count": 1,
+  "things": [
+    {
+      "color": "red",
+      "size": "1"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE>
+<html>
+<head>
+<title>Json Schema Validator</title>
+
+<script src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
+<script src="https://raw.github.com/garycourt/JSV/master/lib/uri/uri.js"></script>
+<script src="https://raw.github.com/garycourt/JSV/master/lib/environments.js"></script>
+<script src="https://raw.github.com/garycourt/JSV/master/lib/jsv.js"></script>
+<!--
+<script src="https://raw.github.com/garycourt/JSV/master/lib/json-schema-draft-01.js"></script>
+<script src="https://raw.github.com/garycourt/JSV/master/lib/json-schema-draft-02.js"></script>
+-->
+<script src="https://raw.github.com/garycourt/JSV/master/lib/json-schema-draft-03.js"></script>
+<script src="validate.js"></script>
+
+</head>
+
+<body>
+
+<script>
+  /*
+   * Create a list of links to launch individual test files
+   */
+  var test_files = [
+
+    {
+       schema: "schema-to-run.json",
+       json: "api-to-test.json"
+    }
+
+  ]
+</script>
+
+<h1>Schema Validation:</h1>
+
+<p>
+Choose one of the API's below.
+</p>
+<p>
+Or a paths may be specified in URL query string, e.g. <code>?schema=path_to_schema.json&json=url_to_api</code>
+</p>
+<ol>
+<script>
+  for (var i=0; i <test_files.length; i++){
+    document.write( "<li><a href='?schema=" + test_files[i].schema + "&json=" + test_files[i].json + "'>" + test_files[i].json + "</a></li>" );
+  };
+</script>
+</ol>
+
+</body>
+</html>
