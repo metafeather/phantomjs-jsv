@@ -83,7 +83,7 @@ page.open(
 
             // check there is a test runner and query its status by asking for any results
             if(window.JSV) {
-              return !!JSV.getResults();
+              return !!JSV._lastResults;
             } else {
               console.log("Not a test page");
               return true;
@@ -96,7 +96,102 @@ page.open(
           var data = page.evaluate(function(){
 
             // get all the results in various formats for convienience
-            if(typeof window.report === 'object') {
+            if(typeof window.JSV._lastResults === 'object') {
+
+              // YUITest compatible API
+              JSV.getResults = function(format){
+                if (Y.Lang.isFunction(format)){
+                  return format(this._lastResults);
+                } else {
+                  return this._lastResults;
+                }
+              };
+
+              // Results formatters
+              JSV.Format = {
+                JUnitXML: function(results){
+                  var total = Object.keys(results.validated).length,
+                      filename = JSV._options.json;
+
+                  function serializeToJUnitXML(results){
+                    var l = Y.Lang,
+                        xml = "";
+
+                      // XML structure
+                      xml += '<testsuites>';
+                      xml +=   '<testsuite name="'+ filename +'" tests="'+ total +'" failures="'+ results.errors.length +'" time="'+ total +'">';
+
+                      if (l.isArray(results.errors)){
+                        Y.Array.each(
+                          results.errors,
+                          function (v,i,a){
+                            xml += '<testcase name="'+ v.schemaUri +'" time="1">';
+                            xml +=   '<failure message="'+ v.message +'\>';
+                            xml +=     '<![CDATA['+ v.message +']]>';
+                            xml +=   '</failure>';
+                            xml+= "</testcase>";
+                          }
+                        )
+                      };
+                      if (l.isObject(results.validated)){
+                        Y.Object.each(
+                          results.validated,
+                          function (v,i,o){
+                            xml += '<testcase name="'+ i +'" time="1">';
+                            xml+= "</testcase>";
+                          }
+                        )
+                      };
+
+                      xml +=   '</testsuite>';
+                      xml += '</testsuites>';
+
+                      return xml;
+                  }
+                  return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+ serializeToJUnitXML(results);
+                },
+                TAP: function(results){
+                  var total = Object.keys(results.validated).length,
+                      filename = JSV._options.json;
+
+                  function serializeToJUnitTAP(results){
+                    var currentTestNum = 1,
+                        l = Y.Lang,
+                        text = "";
+
+                      // text structure
+                      text +=  '#Begin testsuite '+ filename +' ('+ results.errors.length +' failed of '+ total +')\n';
+                      text +=   '#Begin testcase '+ filename +' ('+ results.errors.length +' failed of '+ total +')\n';
+
+                      if (l.isArray(results.errors)){
+                        Y.Array.each(
+                          results.errors,
+                          function (v,i,a){
+                            text += 'not ok '+ (currentTestNum++) +' - '+ v.schemaUri +' - '+ v.message +'\n';
+                          }
+                        )
+                      };
+                      /*
+                      if (l.isObject(results.validated)){
+                        Y.Object.each(
+                          results.validated,
+                          function (v,i,o){
+                            text += 'ok '+ (currentTestNum++) +' - '+ i +'\n';
+                          }
+                        )
+                      };
+                      */
+
+                      text +=   '#End testcase '+ filename +'\n';
+                      text += '#End testsuite '+ filename +'\n';
+
+                      return text;
+                  }
+                  return "1.."+ total +'\n'+ serializeToJUnitTAP(results);
+                }
+
+              };
+
               return {
                 js: JSV.getResults(), // JS object
                 junit: JSV.getResults(JSV.Format.JUnitXML), // JUnit XML report
