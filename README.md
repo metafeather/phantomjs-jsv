@@ -1,4 +1,4 @@
-# phantomjs-yuitest
+# phantomjs-jsv
 
 The javascript scripts in *phantomjs-jsv* enable the execution and gathering of JSON Schema Validation ([JSV][]) results via PhantomJS.
 
